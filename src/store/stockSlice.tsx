@@ -46,6 +46,10 @@ const stockSlice = createSlice({
       state.page = newPage;
       state.stockListPage = state.stockList.slice(newPage * 10 - 1, newPage * 10 - 1 + 10);
     },
+    reorderStockList(state, action) {
+      const newList: IStock[] = action.payload;
+      state.stockListPage = newList;
+    },
   },
 });
 

@@ -12,13 +12,11 @@ import store from './store/store';
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 root.render(
-  <React.StrictMode>
-    <ErrorBoundary fallback={<Error />}>
-      <Provider store={store}>
-        <App />
-      </Provider>
-    </ErrorBoundary>
-  </React.StrictMode>,
+  <ErrorBoundary fallback={<Error />}>
+    <Provider store={store}>
+      <App />
+    </Provider>
+  </ErrorBoundary>,
 );
 
 // If you want to start measuring performance in your app, pass a function
