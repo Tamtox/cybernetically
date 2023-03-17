@@ -1,6 +1,6 @@
 interface IStock {
   askPrice: number;
-  askSIze: number;
+  askSize: number;
   bidPrice: number;
   bidSize: number;
   lastSalePrice: number;
