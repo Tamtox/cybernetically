@@ -17,7 +17,7 @@ export type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ type = 'button', className = '', isLoading = false, startIcon, endIcon, ...props }, ref): JSX.Element => {
     return (
-      <button ref={ref} type={type} className={`button`} {...props}>
+      <button ref={ref} type={type} className={`button ${className}`} {...props}>
         {isLoading && <Spinner height="10px" />}
         {!isLoading && startIcon}
         <span className="mx-2">{props.children}</span> {!isLoading && endIcon}

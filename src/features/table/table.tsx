@@ -72,7 +72,7 @@ const Table = (): JSX.Element => {
     const items = Array.from(stockListPage);
     const [reorderedItem] = items.splice(result.source.index, 1);
     items.splice(result.destination.index, 0, reorderedItem);
-    dispatch(stockActions.setStockList(items));
+    dispatch(stockActions.reorderStockList(items));
   };
   return (
     <>
@@ -82,7 +82,7 @@ const Table = (): JSX.Element => {
         <div className="table__container">
           <table className={`table`}>
             <thead className={`table__head`}>
-              <tr>
+              <tr className="table__row">
                 {tableHeaders.map((header) => {
                   return (
                     <th key={header} className={`row__element`}>
