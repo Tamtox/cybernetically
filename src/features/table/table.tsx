@@ -42,7 +42,7 @@ const tableDataKeys = [
   'volume',
 ];
 
-// iexcloud.io token
+// !!!!!!!!!!! Add your iexcloud.io token here !!!!!!!!!!!!!!!!!!
 const token = 'sk_0e70f3df5e7d472693e28f2c04b0e8cc';
 
 const Table = (): JSX.Element => {
@@ -96,6 +96,7 @@ const Table = (): JSX.Element => {
         <Spinner height="100vh" />
       ) : (
         <div className="table__container">
+          {/*Static table head */}
           <table className={`table`}>
             <thead className={`table__head`}>
               <tr className="table__row">
@@ -108,6 +109,7 @@ const Table = (): JSX.Element => {
                 })}
               </tr>
             </thead>
+            {/*Table body. Can be dragged and dropped */}
             <tbody className={`table__body`}>
               <DragDropContext onDragEnd={onDragEnd}>
                 <Droppable droppableId="tasks">
@@ -139,18 +141,6 @@ const Table = (): JSX.Element => {
                                   );
                                 }
                               })}
-                              {/* <td className={`row__element`}>{stock.symbol}</td>
-                              <td className={`row__element`}>{stock.askPrice}</td>
-                              <td className={`row__element`}>{stock.askSize}</td>
-                              <td className={`row__element`}>{stock.bidPrice}</td>
-                              <td className={`row__element`}>{stock.bidSize}</td>
-                              <td className={`row__element`}>{stock.lastSalePrice}</td>
-                              <td className={`row__element`}>{stock.lastSaleSize}</td>
-                              <td className={`row__element`}>{new Date(stock.lastSaleTime).toLocaleTimeString()}</td>
-                              <td className={`row__element`}>{new Date(stock.lastUpdated).toLocaleTimeString()}</td>
-                              <td className={`row__element`}>{stock.sector}</td>
-                              <td className={`row__element`}>{stock.securityType}</td>
-                              <td className={`row__element`}>{stock.volume}</td> */}
                             </tr>
                           )}
                         </Draggable>
@@ -170,6 +160,7 @@ const Table = (): JSX.Element => {
             >
               Prev
             </Button>
+            {/* Current page , total pages, and page selection */}
             <div className="pages">
               <span>Page</span>
               <select

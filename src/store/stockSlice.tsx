@@ -47,8 +47,15 @@ const stockSlice = createSlice({
       state.stockListPage = state.stockList.slice((newPage - 1) * 10, (newPage - 1) * 10 + 10);
     },
     reorderStockList(state, action) {
+      // Reorder page stock list
       const newList: IStock[] = action.payload;
       state.stockListPage = newList;
+      // Data reoreder persistance
+      const page = state.page;
+      const stockSlistPre = state.stockList.slice(0, (page - 1) * 10);
+      const stockListPost = state.stockList.slice((page - 1) * 10 + 10, state.stockList.length);
+      const newStockList: IStock[] = stockSlistPre.concat(newList, stockListPost);
+      state.stockList = newStockList;
     },
   },
 });
