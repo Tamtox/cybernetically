@@ -27,6 +27,21 @@ const tableHeaders = [
   'Volume',
 ];
 
+const tableDataKeys = [
+  'symbol',
+  'askPrice',
+  'askSize',
+  'bidPrice',
+  'bidSize',
+  'lastSalePrice',
+  'lastSaleSize',
+  'lastSaleTime',
+  'lastUpdated',
+  'sector',
+  'securityType',
+  'volume',
+];
+
 // iexcloud.io token
 const token = 'sk_0e70f3df5e7d472693e28f2c04b0e8cc';
 
@@ -54,6 +69,7 @@ const Table = (): JSX.Element => {
         url: `https://cloud.iexapis.com/stable/tops?token=${token}`,
       });
       const { data } = res;
+      console.log(data);
       dispatch(stockActions.setStockList(data));
     } catch (error) {
       axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error);
@@ -108,7 +124,22 @@ const Table = (): JSX.Element => {
                               ref={provided.innerRef}
                             >
                               <td className={`row__element`}>{(page - 1) * 10 + (index + 1)}</td>
-                              <td className={`row__element`}>{stock.symbol}</td>
+                              {tableDataKeys.map((dataKey: string) => {
+                                if (dataKey === 'lastSaleTime' || dataKey === 'lastUpdated') {
+                                  return (
+                                    <td key={dataKey} className={`row__element`}>
+                                      {new Date(stock[dataKey]).toLocaleTimeString()}
+                                    </td>
+                                  );
+                                } else {
+                                  return (
+                                    <td key={dataKey} className={`row__element`}>
+                                      {stock[dataKey as keyof IStock]}
+                                    </td>
+                                  );
+                                }
+                              })}
+                              {/* <td className={`row__element`}>{stock.symbol}</td>
                               <td className={`row__element`}>{stock.askPrice}</td>
                               <td className={`row__element`}>{stock.askSize}</td>
                               <td className={`row__element`}>{stock.bidPrice}</td>
@@ -119,7 +150,7 @@ const Table = (): JSX.Element => {
                               <td className={`row__element`}>{new Date(stock.lastUpdated).toLocaleTimeString()}</td>
                               <td className={`row__element`}>{stock.sector}</td>
                               <td className={`row__element`}>{stock.securityType}</td>
-                              <td className={`row__element`}>{stock.volume}</td>
+                              <td className={`row__element`}>{stock.volume}</td> */}
                             </tr>
                           )}
                         </Draggable>

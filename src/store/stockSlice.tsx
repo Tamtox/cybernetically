@@ -31,7 +31,7 @@ const stockSlice = createSlice({
     },
     setStockList(state, action) {
       const newStockList: IStock[] = action.payload;
-      state.stockList = action.payload;
+      state.stockList = newStockList;
       state.stockListLoaded = true;
       state.maxPage = Math.ceil(newStockList.length / 10);
       state.stockListPage = newStockList.slice(0, 10);
@@ -44,7 +44,7 @@ const stockSlice = createSlice({
     setPage(state, action) {
       const newPage: number = action.payload;
       state.page = newPage;
-      state.stockListPage = state.stockList.slice(newPage * 10 - 1, newPage * 10 - 1 + 10);
+      state.stockListPage = state.stockList.slice((newPage - 1) * 10, (newPage - 1) * 10 + 10);
     },
     reorderStockList(state, action) {
       const newList: IStock[] = action.payload;
