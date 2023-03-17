@@ -28,7 +28,7 @@ const stockKeyValues = {
 };
 
 // !!!!!!!!!!! Add your own iexcloud.io token here !!!!!!!!!!!!!!!!!!
-const token = 'sk_0e70f3df5e7d472693e28f2c04b0e8cc';
+const token = '';
 
 const Table = (): JSX.Element => {
   // Custom hook to check window size
@@ -48,9 +48,8 @@ const Table = (): JSX.Element => {
     }
   };
   // Field selection
-  const [field, setField] = useState('Ask Price');
+  const [field, setField] = useState('askPrice');
   const fieldChange = (newField: string) => {
-    console.log(newField);
     setField(newField);
   };
   // Drag and drop functionality
