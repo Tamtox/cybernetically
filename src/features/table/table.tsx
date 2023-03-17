@@ -1,51 +1,38 @@
 import './table.scss';
 
 import axios from 'axios';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 import { useDispatch, useSelector } from 'react-redux';
 
 import Button from '../../components/elements/Button/Button';
 import Spinner from '../../components/elements/Spinner/Spinner';
+import useWindowSize from '../../hooks/useWindowSize';
 import type { RootState } from '../../store/store';
 import { stockActions } from '../../store/store';
 import type { IStock } from '../../types/interfaces';
 
-const tableHeaders = [
-  'No',
-  'Stock Symbol',
-  'Ask Price',
-  'Ask Size',
-  'Bid Size',
-  'Bid Price',
-  'Last Sale Price',
-  'Last Sale Size',
-  'Last Sale Time',
-  'Last Updated',
-  'Sector',
-  'Security Type',
-  'Volume',
-];
+const stockKeyValues = {
+  symbol: 'Stock Symbol',
+  askPrice: 'Ask Price',
+  askSize: 'Ask Size',
+  bidPrice: 'Bid Price',
+  bidSize: 'Bid Size',
+  lastSalePrice: 'Last Sale Price',
+  lastSaleSize: 'Last Sale Size',
+  lastSaleTime: 'Last Sale Time',
+  lastUpdated: 'Last Updated',
+  sector: 'Sector',
+  securityType: 'Security Type',
+  volume: 'Volume',
+};
 
-const tableDataKeys = [
-  'symbol',
-  'askPrice',
-  'askSize',
-  'bidPrice',
-  'bidSize',
-  'lastSalePrice',
-  'lastSaleSize',
-  'lastSaleTime',
-  'lastUpdated',
-  'sector',
-  'securityType',
-  'volume',
-];
-
-// !!!!!!!!!!! Add your iexcloud.io token here !!!!!!!!!!!!!!!!!!
+// !!!!!!!!!!! Add your own iexcloud.io token here !!!!!!!!!!!!!!!!!!
 const token = 'sk_0e70f3df5e7d472693e28f2c04b0e8cc';
 
 const Table = (): JSX.Element => {
+  // Custom hook to check window size
+  const { width } = useWindowSize();
   // State
   const dispatch = useDispatch();
   const dataLoading = useSelector<RootState, boolean>((state) => state.stockSlice.dataLoading);
@@ -60,6 +47,20 @@ const Table = (): JSX.Element => {
       dispatch(stockActions.setPage(newPage));
     }
   };
+  // Field selection
+  const [field, setField] = useState('Ask Price');
+  const fieldChange = (newField: string) => {
+    console.log(newField);
+    setField(newField);
+  };
+  // Drag and drop functionality
+  const onDragEnd = (result: any) => {
+    if (!result.destination) return;
+    const items = Array.from(stockListPage);
+    const [reorderedItem] = items.splice(result.source.index, 1);
+    items.splice(result.destination.index, 0, reorderedItem);
+    dispatch(stockActions.reorderStockList(items));
+  };
   // Load data
   const loadData = async () => {
     try {
@@ -69,7 +70,6 @@ const Table = (): JSX.Element => {
         url: `https://cloud.iexapis.com/stable/tops?token=${token}`,
       });
       const { data } = res;
-      console.log(data);
       dispatch(stockActions.setStockList(data));
     } catch (error) {
       axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error);
@@ -82,14 +82,6 @@ const Table = (): JSX.Element => {
       loadData();
     }
   }, [stockListLoaded]);
-  // Drag and drop functionality
-  const onDragEnd = (result: any) => {
-    if (!result.destination) return;
-    const items = Array.from(stockListPage);
-    const [reorderedItem] = items.splice(result.source.index, 1);
-    items.splice(result.destination.index, 0, reorderedItem);
-    dispatch(stockActions.reorderStockList(items));
-  };
   return (
     <>
       {dataLoading ? (
@@ -100,13 +92,42 @@ const Table = (): JSX.Element => {
           <table className={`table`}>
             <thead className={`table__head`}>
               <tr className="table__row">
-                {tableHeaders.map((header) => {
-                  return (
-                    <th key={header} className={`row__element`}>
-                      {header}
-                    </th>
-                  );
-                })}
+                <th key={'No.'} className={`row__element`}>
+                  No.
+                </th>
+                <th key={'Symbol'} className={`row__element`}>
+                  Stock Symbol
+                </th>
+                {/*Select field if screen is less than 1000px */}
+                {(width || 1000) < 1000 ? (
+                  <th className={`row__element`}>
+                    <select
+                      className="select"
+                      value={field}
+                      onChange={(e: any) => {
+                        fieldChange(e.target.value);
+                      }}
+                    >
+                      {Object.entries(stockKeyValues).map((entry) => {
+                        return entry[1] !== 'Stock Symbol' ? (
+                          <option key={entry[0]} value={entry[0]}>
+                            {entry[1]}
+                          </option>
+                        ) : null;
+                      })}
+                    </select>
+                  </th>
+                ) : (
+                  <>
+                    {Object.values(stockKeyValues).map((header) => {
+                      return header !== 'Stock Symbol' ? (
+                        <th key={header} className={`row__element`}>
+                          {header}
+                        </th>
+                      ) : null;
+                    })}
+                  </>
+                )}
               </tr>
             </thead>
             {/*Table body. Can be dragged and dropped */}
@@ -125,22 +146,36 @@ const Table = (): JSX.Element => {
                               {...provided.dragHandleProps}
                               ref={provided.innerRef}
                             >
-                              <td className={`row__element`}>{(page - 1) * 10 + (index + 1)}</td>
-                              {tableDataKeys.map((dataKey: string) => {
-                                if (dataKey === 'lastSaleTime' || dataKey === 'lastUpdated') {
-                                  return (
-                                    <td key={dataKey} className={`row__element`}>
-                                      {new Date(stock[dataKey]).toLocaleTimeString()}
-                                    </td>
-                                  );
-                                } else {
-                                  return (
-                                    <td key={dataKey} className={`row__element`}>
-                                      {stock[dataKey as keyof IStock]}
-                                    </td>
-                                  );
-                                }
-                              })}
+                              <td key={'No.'} className={`row__element`}>
+                                {(page - 1) * 10 + (index + 1)}
+                              </td>
+                              <td key="symbol" className={`row__element`}>
+                                {stock.symbol}
+                              </td>
+                              {/*Select field if screen is less than 1000px */}
+                              {(width || 1000) < 1000 ? (
+                                <td key={field} className={`row__element`}>
+                                  {stock[field as keyof IStock]}
+                                </td>
+                              ) : (
+                                <>
+                                  {Object.keys(stockKeyValues).map((dataKey: string) => {
+                                    if (dataKey === 'lastSaleTime' || dataKey === 'lastUpdated') {
+                                      return (
+                                        <td key={dataKey} className={`row__element`}>
+                                          {new Date(stock[dataKey]).toLocaleTimeString()}
+                                        </td>
+                                      );
+                                    } else {
+                                      return dataKey !== 'symbol' ? (
+                                        <td key={dataKey} className={`row__element`}>
+                                          {stock[dataKey as keyof IStock]}
+                                        </td>
+                                      ) : null;
+                                    }
+                                  })}
+                                </>
+                              )}
                             </tr>
                           )}
                         </Draggable>
@@ -164,6 +199,7 @@ const Table = (): JSX.Element => {
             <div className="pages">
               <span>Page</span>
               <select
+                className="select"
                 name="page"
                 value={page}
                 onChange={(e: any) => {
